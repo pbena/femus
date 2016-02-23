@@ -36,16 +36,9 @@ IF(BUILD_FSIAPPS)
 
 # FSI SteadyState in porous media
   ADD_SUBDIRECTORY(${FSI_FOLDER}/fsi_porous/)
-<<<<<<< HEAD
-
-  # FSI SteadyState in porous media
-  ADD_SUBDIRECTORY(${FSI_FOLDER}/hydr_frac/)
-
-=======
   
 # FSI Time Dependent Benchmarks
   ADD_SUBDIRECTORY(${FSI_FOLDER}/frac_prop/)
->>>>>>> 2ded208de2399847f73081104a8de1e97a5d1145
   
   unset(FSI_FOLDER)
   
