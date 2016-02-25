@@ -60,6 +60,7 @@ codeblocks/
 
 # system files
 .directory
+.Rhistory
 
 # old files
 *.old
