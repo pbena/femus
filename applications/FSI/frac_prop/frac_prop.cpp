@@ -29,25 +29,22 @@ int main(int argc,char **args) {
 //         files.RedirectCout();
 	
   /// INIT MESH =================================  
-  
-  unsigned short nm,nr;
-  nm=2;
-  std::cout<<"MULTIGRID levels: "<< nm << endl;
-
-  nr=0;
-  std::cout<<"MAX_REFINEMENT levels: " << nr << endl<< endl;
-  
-  int tmp=nm;  nm+=nr;  nr=tmp;
-  
-  char *infile = new char [50];
- 
-  sprintf(infile,"./input/cylinder.med");
+  std::string infile = "./input/mesh_tet.med";
   
   //Adimensional quantity (Lref,Uref)
   double Lref = 1.;
   double Uref = 1.;
   
-  MultiLevelMesh ml_msh(nm,nr,infile,"seventh",Lref,NULL);
+//   MultiLevelMesh ml_msh(nm,nr,infile.c_str(),"seventh",Lref,NULL);
+  
+  MultiLevelMesh ml_msh;
+  ml_msh.ReadCoarseMesh(infile.c_str(),"seventh",Lref);
+  unsigned numberOfUniformLevels =  2;
+  unsigned numberOfSelectiveLevels = 0;
+  ml_msh.RefineMesh(numberOfUniformLevels , numberOfUniformLevels + numberOfSelectiveLevels, NULL);
+
+//   ml_msh.SetWriter(VTK);
+//   ml_msh.GetWriter()->write(DEFAULT_OUTPUTDIR,"biquadratic");
    
   MultiLevelSolution ml_sol(&ml_msh);
    
@@ -56,7 +53,7 @@ int main(int argc,char **args) {
   ml_sol.AddSolution("V",LAGRANGE,SECOND,2);
   ml_sol.AddSolution("W",LAGRANGE,SECOND,2);
   // the pressure variable should be the last for the Schur decomposition
-  ml_sol.AddSolution("P",DISCONTINOUS_POLYNOMIAL,FIRST,1);
+  ml_sol.AddSolution("P",LAGRANGE,FIRST,1); /*TODO why is DISC_POLYNOMIAL not working*/
   ml_sol.AssociatePropertyToSolution("P","Pressure");
   
   //Initialize (update Init(...) function)
@@ -69,6 +66,8 @@ int main(int argc,char **args) {
   ml_sol.GenerateBdc("W");
   ml_sol.GenerateBdc("P");
 
+  
+  
   
   MultiLevelProblem ml_prob(&ml_sol);
   
@@ -105,7 +104,7 @@ int main(int argc,char **args) {
 
   // time loop parameter
   system.SetIntervalTime(0.1);
-  const unsigned int n_timesteps = 20;
+  const unsigned int n_timesteps = 3;
   const unsigned int write_interval = 1;
   
   for (unsigned time_step = 0; time_step < n_timesteps; time_step++) {
@@ -136,65 +135,47 @@ int main(int argc,char **args) {
   } //end loop timestep
   
 
-  // Destroy all the new systems
+  //Destroy all the new systems
   ml_prob.clear();
    
 
-  delete[] infile;
   return 0;
 }
 
 //-------------------------------------------------------------------------------------------------------------------
 
 bool SetBoundaryCondition(const std::vector < double >& x,const char name[],
-			  double &value, const int FaceName, const double time){
-  bool test=1; //Dirichlet
-//   value=0.;
+			  double &value, const int FaceName, const double time)  {
 
-//   if(!strcmp(name,"U")) {
-// 
-//   }  
-//   else if(!strcmp(name,"V")){
-//  
-//   }
-//   else if(!strcmp(name,"W")){
-//     if(1==FaceName){
-//       test=1;
-//       value=0.;
-//     }  
-//     else if(2==FaceName ){  
-//       test=1;
-//       value=0.;
-//     }
-//     else if(3==FaceName ){  
-//       test=1;
-//       value=0.;
-//     }
-//     else if(4==FaceName ){  
-//       test=1;
-//       value=0.;
-//     }
-//   }
-//   else if(!strcmp(name,"P")){
-//     if(1==FaceName){
-//       test=0;
-//       value=0.;
-//     }  
-//     else if(2==FaceName ){  
-//       test=0;
-//       value=0.;
-//     }
-//     else if(3==FaceName ){  
-//       test=0;
-//       value=0.;
-//     }
-//     else if(4==FaceName ){  
-//       test=0;
-//       value=0.;
-//     }
-//   }
+  bool dirichlet = true; //Dirichlet
+  value = 0.;
+
+  double epsilon = 10e-5;
+
+ if (   x[0]*x[0] + x[1]*x[1] < 500.*500. + epsilon && x[0]*x[0] + x[1]*x[1] > 500.*500. - epsilon )  { //tip of the fracture
+   dirichlet = false;
+   value = 0.;
+ }
   
-  return test;
+ if (   x[2] < epsilon   &&   x[2] > - epsilon ) {  //bottom face
+   
+       if(!strcmp(name,"U")) { value = 0.; }  
+  else if(!strcmp(name,"V")) { value = 0.; }
+  else if(!strcmp(name,"W")) { value = 0.; }
+   
+ }  //end bottom face
+ 
+ if (   x[2] < 20. + epsilon   &&   x[2] > 20. - epsilon ) {  //top face
+   
+       if(!strcmp(name,"U")) { value = 0.; }  
+  else if(!strcmp(name,"V")) { value = 0.; }
+  else if(!strcmp(name,"W")) {     value = 0.;
+    if (   x[0]*x[0] + x[1]*x[1] < 100*100. + epsilon  )      value = -10.;
+ }
+   
+ }  //end top face
+
+   return dirichlet;
 }
 
 
