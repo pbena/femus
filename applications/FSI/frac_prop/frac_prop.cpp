@@ -104,18 +104,18 @@ int main(int argc,char **args) {
 
   // time loop parameter
   system.SetIntervalTime(0.1);
-  const unsigned int n_timesteps = 1;
+  const unsigned int n_timesteps = 3;
   const unsigned int write_interval = 1;
   
   for (unsigned time_step = 0; time_step < n_timesteps; time_step++) {
    
-//     // Solving Navier-Stokes system
-//     std::cout << std::endl;
-//     std::cout << " *********** Navier-Stokes ************  " << std::endl;
-//     ml_prob.get_system("Navier-Stokes").MGsolve();
-//    
-//     //update Solution
-//     ml_prob.get_system<TransientNonlinearImplicitSystem>("Navier-Stokes").UpdateSolution();
+    // Solving Navier-Stokes system
+    std::cout << std::endl;
+    std::cout << " *********** Navier-Stokes ************  " << std::endl;
+    ml_prob.get_system("Navier-Stokes").MGsolve();
+   
+    //update Solution
+    ml_prob.get_system<TransientNonlinearImplicitSystem>("Navier-Stokes").UpdateSolution();
 
     // print solution
     if ( !(time_step%write_interval) ) {
@@ -127,7 +127,6 @@ int main(int argc,char **args) {
       print_vars.push_back("W");
       print_vars.push_back("P");
       
-//       ml_prob.printsol_vtu_inline("biquadratic",print_vars,time_step);
       VTKWriter vtkio(&ml_sol);
       vtkio.SetDebugOutput(true);
       vtkio.Write(DEFAULT_OUTPUTDIR/*files.GetOutputPath()*/,"biquadratic",print_vars,time_step);

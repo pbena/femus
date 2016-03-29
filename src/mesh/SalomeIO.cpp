@@ -312,7 +312,51 @@ void SalomeIO::read(const std::string& name, vector < vector < double> > &coords
 
         }   //end meshes
 
+        
+// try to put a UNIQUE POSITIVE FLAG on each EXTERNAL FACE, then the SetBoundaryCondition function will distinguish Dirichlet from Neumann
 
+// mesh.el->BuildElementNearVertex();
+
+//   for (unsigned iel=0; iel < mesh.el->GetElementNumber(); iel++) {
+//     for (unsigned iface=0; iface < mesh.el->GetElementFaceNumber(iel); iface++) {
+//       if ( mesh.el->GetFaceElementIndex(iel,iface) <= 0) {//TODO probably just == -1   //if the face is interior
+//         unsigned i1=mesh.el->GetFaceVertexIndex(iel,iface,0);
+//         unsigned i2=mesh.el->GetFaceVertexIndex(iel,iface,1);
+//         unsigned i3=mesh.el->GetFaceVertexIndex(iel,iface,2);
+//         for (unsigned j=0; j< mesh.el->GetElementNearVertexNumber(i1); j++) {
+//           unsigned jel = mesh.el->GetElementNearVertex(i1,j);
+//           if (jel > iel) {
+//             for (unsigned jface=0; jface<mesh.el->GetElementFaceNumber(jel); jface++) {
+//               if ( mesh.el->GetFaceElementIndex(jel,jface) <= 0) {      //if the face is interior
+//                 unsigned j1=mesh.el->GetFaceVertexIndex(jel,jface,0);
+//                 unsigned j2=mesh.el->GetFaceVertexIndex(jel,jface,1);
+//                 unsigned j3=mesh.el->GetFaceVertexIndex(jel,jface,2);
+//                 unsigned j4=mesh.el->GetFaceVertexIndex(jel,jface,3);
+//                 if ((mesh.GetDimension()==3 &&
+//                      (i1==j1 || i1==j2 || i1==j3 ||  i1==j4 )&&
+//                      (i2==j1 || i2==j2 || i2==j3 ||  i2==j4 )&&
+//                      (i3==j1 || i3==j2 || i3==j3 ||  i3==j4 ))||
+//                     (mesh.GetDimension()==2 &&
+//                      (i1==j1 || i1==j2 )&&
+//                      (i2==j1 || i2==j2 ))||
+//                     (mesh.GetDimension()==1 &&
+//                      (i1==j1))
+//                    ) {
+//                   mesh.el->SetFaceElementIndex(iel,iface,jel+1u);
+//                   mesh.el->SetFaceElementIndex(jel,jface,iel+1u);
+//                 }
+//               }
+//             }
+//           }
+//         }
+//       }
+//     }
+//   }
+
+
+        
+        
+        
 //    mesh.el->SetElementGroupNumber(n_groups);
 
        // read GROUP **************** E
