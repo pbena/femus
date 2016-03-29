@@ -39,7 +39,7 @@ int main(int argc,char **args) {
   
   MultiLevelMesh ml_msh;
   ml_msh.ReadCoarseMesh(infile.c_str(),"seventh",Lref);
-  unsigned numberOfUniformLevels =  2;
+  unsigned numberOfUniformLevels =  1;
   unsigned numberOfSelectiveLevels = 0;
   ml_msh.RefineMesh(numberOfUniformLevels , numberOfUniformLevels + numberOfSelectiveLevels, NULL);
 
@@ -109,13 +109,13 @@ int main(int argc,char **args) {
   
   for (unsigned time_step = 0; time_step < n_timesteps; time_step++) {
    
-    // Solving Navier-Stokes system
-    std::cout << std::endl;
-    std::cout << " *********** Navier-Stokes ************  " << std::endl;
-    ml_prob.get_system("Navier-Stokes").MGsolve();
-   
-    //update Solution
-    ml_prob.get_system<TransientNonlinearImplicitSystem>("Navier-Stokes").UpdateSolution();
+//     // Solving Navier-Stokes system
+//     std::cout << std::endl;
+//     std::cout << " *********** Navier-Stokes ************  " << std::endl;
+//     ml_prob.get_system("Navier-Stokes").MGsolve();
+//    
+//     //update Solution
+//     ml_prob.get_system<TransientNonlinearImplicitSystem>("Navier-Stokes").UpdateSolution();
 
     // print solution
     if ( !(time_step%write_interval) ) {
@@ -151,30 +151,30 @@ bool SetBoundaryCondition(const std::vector < double >& x,const char name[],
   bool dirichlet = true; //Dirichlet
   value = 0.;
 
-//   double epsilon = 1e-5;
-// 
-//  if ( x[0]*x[0] + x[1]*x[1] < 500.*500. + 10/* && x[0]*x[0] + x[1]*x[1] > 500.*500. - epsilon*/ )  { //tip of the fracture
-//    dirichlet = false;
-//    value = 0.;
-//  }
+  double epsilon = 1e-5;
+
+ if ( x[0]*x[0] + x[1]*x[1] < 500.*500. + epsilon  && x[0]*x[0] + x[1]*x[1] > 500.*500. - epsilon )  { //tip of the fracture
+   dirichlet = false;
+   value = 0.;
+ }
   
-//  if (   x[2] < epsilon   &&   x[2] > - epsilon ) {  //bottom face
-//    
-//        if(!strcmp(name,"U")) { value = 0.; }  
-//   else if(!strcmp(name,"V")) { value = 0.; }
-//   else if(!strcmp(name,"W")) { value = 0.; }
-//    
-//  }  //end bottom face
-//  
-//  if (   x[2] < 20. + epsilon   &&   x[2] > 20. - epsilon ) {  //top face
-//    
-//        if(!strcmp(name,"U")) { value = 0.; }  
-//   else if(!strcmp(name,"V")) { value = 0.; }
-//   else if(!strcmp(name,"W")) {     value = 0.;
-//     if (   x[0]*x[0] + x[1]*x[1] < 100*100. + epsilon  )      value = -10.;
-//  }
-//    
-//  }  //end top face
+ if (   x[2] < epsilon   &&   x[2] > - epsilon ) {  //bottom face
+   
+       if(!strcmp(name,"U")) { value = 0.; }  
+  else if(!strcmp(name,"V")) { value = 0.; }
+  else if(!strcmp(name,"W")) { value = 0.; }
+   
+ }  //end bottom face
+ 
+ if (   x[2] < 20. + epsilon   &&   x[2] > 20. - epsilon ) {  //top face
+   
+       if(!strcmp(name,"U")) { value = 0.; }  
+  else if(!strcmp(name,"V")) { value = 0.; }
+  else if(!strcmp(name,"W")) {     value = 0.;
+    if (   x[0]*x[0] + x[1]*x[1] < 200*200. + epsilon  )      value = -10.;
+ }
+   
+ }  //end top face
 
    return dirichlet;
 }

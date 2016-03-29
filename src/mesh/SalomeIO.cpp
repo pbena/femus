@@ -313,48 +313,48 @@ void SalomeIO::read(const std::string& name, vector < vector < double> > &coords
         }   //end meshes
 
 
-   mesh.el->SetElementGroupNumber(n_groups);
+//    mesh.el->SetElementGroupNumber(n_groups);
 
        // read GROUP **************** E
    //we assume that these are VOLUME groups
    //in general, I'd say that a group can only have ONE element type (should study the possibility of hybrid mesh)
 
-     for (unsigned j=0; j<n_groups; j++) {
-
-       const uint n_fe_types_for_groups = 1; // so far we have this assumption
-
-     std::string tempj = group_menus[j];
-     std::string my_mesh_name_dir = mesh_ensemble +  "/" + tempj + "/" +  aux_zeroone + "/" + elem_list + "/";  ///@todo here we have to loop
-
-       /// @todo check the underscores according to our naming standard
-
-       // strip the first number to get the group number
-       // strip the second number to get the group material
-       int gr_name = atoi(tempj.substr(6,1).c_str());
-       int gr_mat =  atoi(tempj.substr(8,1).c_str());
-
-  std::vector<std::string> el_fe_type(mesh.GetDimension());
-
-     ReadFE(file_id, el_fe_type, n_fe_types_for_groups, my_mesh_name_dir);
-
-    std::string group_dataset = mesh_ensemble +  "/" + tempj + "/" +  aux_zeroone + "/" + elem_list + "/" + el_fe_type[mesh.GetDimension()-1] + "/" + dofobj_indices;  ///@todo here we have to loop
-
-  hid_t dtset = H5Dopen(file_id,group_dataset.c_str(),H5P_DEFAULT);
-  hid_t filespace = H5Dget_space(dtset);
-  hid_t status  = H5Sget_simple_extent_dims(filespace, dims, NULL);
-  int * elem_indices = new int[dims[0]];
-  status=H5Dread(dtset,H5T_NATIVE_INT,H5S_ALL,H5S_ALL,H5P_DEFAULT,elem_indices);
-
-  for (unsigned i=0; i < dims[0]; i++) {
-           mesh.el->SetElementGroup(elem_indices[i] -1 - n_elements_b_bb, gr_name);
-           mesh.el->SetElementMaterial(elem_indices[i] -1 - n_elements_b_bb ,gr_mat);
-    }
-
-
-   H5Dclose(dtset);
-   delete [] elem_indices;
-
-    }
+//      for (unsigned j=0; j<n_groups; j++) {
+// 
+//        const uint n_fe_types_for_groups = 1; // so far we have this assumption
+// 
+//      std::string tempj = group_menus[j];
+//      std::string my_mesh_name_dir = mesh_ensemble +  "/" + tempj + "/" +  aux_zeroone + "/" + elem_list + "/";  ///@todo here we have to loop
+// 
+//        /// @todo check the underscores according to our naming standard
+// 
+//        // strip the first number to get the group number
+//        // strip the second number to get the group material
+//        int gr_name = atoi(tempj.substr(6,1).c_str());
+//        int gr_mat =  atoi(tempj.substr(8,1).c_str());
+// 
+//   std::vector<std::string> el_fe_type(mesh.GetDimension());
+// 
+//      ReadFE(file_id, el_fe_type, n_fe_types_for_groups, my_mesh_name_dir);
+// 
+//     std::string group_dataset = mesh_ensemble +  "/" + tempj + "/" +  aux_zeroone + "/" + elem_list + "/" + el_fe_type[mesh.GetDimension()-1] + "/" + dofobj_indices;  ///@todo here we have to loop
+// 
+//   hid_t dtset = H5Dopen(file_id,group_dataset.c_str(),H5P_DEFAULT);
+//   hid_t filespace = H5Dget_space(dtset);
+//   hid_t status  = H5Sget_simple_extent_dims(filespace, dims, NULL);
+//   int * elem_indices = new int[dims[0]];
+//   status=H5Dread(dtset,H5T_NATIVE_INT,H5S_ALL,H5S_ALL,H5P_DEFAULT,elem_indices);
+// 
+//   for (unsigned i=0; i < dims[0]; i++) {
+//            mesh.el->SetElementGroup(elem_indices[i] -1 - n_elements_b_bb, gr_name);
+//            mesh.el->SetElementMaterial(elem_indices[i] -1 - n_elements_b_bb ,gr_mat);
+//     }
+// 
+// 
+//    H5Dclose(dtset);
+//    delete [] elem_indices;
+// 
+//     }
      //   // end read GROUP **************** E
 
 
