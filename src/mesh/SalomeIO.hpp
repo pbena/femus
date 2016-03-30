@@ -49,10 +49,10 @@ class SalomeIO : public MeshInput<Mesh>
   SalomeIO (Mesh& mesh);
 
   /**
-   * Reads in a mesh in the neutral gambit *.neu format
-   * from the ASCII file given by name.
+   * Reads in a mesh in the salome *.med format
    *
    */
+  
   virtual void read (const std::string& name, vector < vector < double> > &coords, const double Lref, std::vector<bool> &type_elem_flag);
 
  private:

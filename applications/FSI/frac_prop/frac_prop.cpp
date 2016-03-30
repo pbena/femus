@@ -39,7 +39,7 @@ int main(int argc,char **args) {
   
   MultiLevelMesh ml_msh;
   ml_msh.ReadCoarseMesh(infile.c_str(),"seventh",Lref);
-  unsigned numberOfUniformLevels =  2;
+  unsigned numberOfUniformLevels =  1;
   unsigned numberOfSelectiveLevels = 0;
   ml_msh.RefineMesh(numberOfUniformLevels , numberOfUniformLevels + numberOfSelectiveLevels, NULL);
 
@@ -104,7 +104,7 @@ int main(int argc,char **args) {
 
   // time loop parameter
   system.SetIntervalTime(0.1);
-  const unsigned int n_timesteps = 1;
+  const unsigned int n_timesteps = 3;
   const unsigned int write_interval = 1;
   
   for (unsigned time_step = 0; time_step < n_timesteps; time_step++) {
@@ -127,7 +127,6 @@ int main(int argc,char **args) {
       print_vars.push_back("W");
       print_vars.push_back("P");
       
-//       ml_prob.printsol_vtu_inline("biquadratic",print_vars,time_step);
       VTKWriter vtkio(&ml_sol);
       vtkio.SetDebugOutput(true);
       vtkio.Write(DEFAULT_OUTPUTDIR/*files.GetOutputPath()*/,"biquadratic",print_vars,time_step);
@@ -151,30 +150,30 @@ bool SetBoundaryCondition(const std::vector < double >& x,const char name[],
   bool dirichlet = true; //Dirichlet
   value = 0.;
 
-//   double epsilon = 1e-5;
-// 
-//  if ( x[0]*x[0] + x[1]*x[1] < 500.*500. + 10/* && x[0]*x[0] + x[1]*x[1] > 500.*500. - epsilon*/ )  { //tip of the fracture
-//    dirichlet = false;
-//    value = 0.;
-//  }
+  double epsilon = 1e-5;
+
+ if ( x[0]*x[0] + x[1]*x[1] < 500.*500. + epsilon  && x[0]*x[0] + x[1]*x[1] > 500.*500. - epsilon )  { //tip of the fracture
+   dirichlet = false;
+   value = 0.;
+ }
   
-//  if (   x[2] < epsilon   &&   x[2] > - epsilon ) {  //bottom face
-//    
-//        if(!strcmp(name,"U")) { value = 0.; }  
-//   else if(!strcmp(name,"V")) { value = 0.; }
-//   else if(!strcmp(name,"W")) { value = 0.; }
-//    
-//  }  //end bottom face
-//  
-//  if (   x[2] < 20. + epsilon   &&   x[2] > 20. - epsilon ) {  //top face
-//    
-//        if(!strcmp(name,"U")) { value = 0.; }  
-//   else if(!strcmp(name,"V")) { value = 0.; }
-//   else if(!strcmp(name,"W")) {     value = 0.;
-//     if (   x[0]*x[0] + x[1]*x[1] < 100*100. + epsilon  )      value = -10.;
-//  }
-//    
-//  }  //end top face
+ if (   x[2] < epsilon   &&   x[2] > - epsilon ) {  //bottom face
+   
+       if(!strcmp(name,"U")) { value = 0.; }  
+  else if(!strcmp(name,"V")) { value = 0.; }
+  else if(!strcmp(name,"W")) { value = 0.; }
+   
+ }  //end bottom face
+ 
+ if (   x[2] < 20. + epsilon   &&   x[2] > 20. - epsilon ) {  //top face
+   
+       if(!strcmp(name,"U")) { value = 0.; }  
+  else if(!strcmp(name,"V")) { value = 0.; }
+  else if(!strcmp(name,"W")) {     value = 0.;
+    if (   x[0]*x[0] + x[1]*x[1] < 200*200. + epsilon  )      value = -10.;
+ }
+   
+ }  //end top face
 
    return dirichlet;
 }
